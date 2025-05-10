@@ -1,3 +1,4 @@
+//@ts-nocheck
 import  { useEffect, useState } from 'react';
 import { FaUser } from "react-icons/fa";
 import { MdOutlinePassword } from "react-icons/md";

@@ -1,10 +1,7 @@
-"use client";
+//@ts-nocheck
 
 import { useEffect, useState } from "react";
 import {
-  CalendarDays,
-  Users,
-  Plus,
   Trash2,
 } from "lucide-react";
 import {

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useParams, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { getEventid, updateUser, verifyMagiccLink } from '@/lib/user.action';

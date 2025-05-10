@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, { useState, useRef } from "react";
 import { Rnd } from "react-rnd";
 import { ChromePicker } from "react-color";

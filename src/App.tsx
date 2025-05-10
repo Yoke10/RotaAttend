@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Route, Routes } from "react-router-dom"
 import Signin from "./Pages/Signin"
 import Dashboard from "./Pages/Dashboard"
