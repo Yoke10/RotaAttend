@@ -44,7 +44,7 @@ const Management = () => {
           setVerified(true);
           setUserData(res.data);
           // Validate dates after setting the event
-             const ev = await getEventid(res.data.eventId as string);
+             const ev = await getEventid(res.data.eventId );
     const today = new Date();
     const start = new Date(ev.startDate);
     const end = new Date(ev.endDate);

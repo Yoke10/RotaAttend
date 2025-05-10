@@ -22,7 +22,7 @@ export const getEvents=async()=>{
          console.log(error);
     }
 }
-export const getEventid=async(id:string)=>{
+export const getEventid=async(id)=>{
     try {
         const res=await axios.get(`${url}/getid?id=${id}`);
     console.log(res);

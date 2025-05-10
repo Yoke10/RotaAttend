@@ -19,13 +19,11 @@ import { toast } from "react-toastify";
 import Analysis from '../components/Analysis'
 const EvenPage = () => {
   const { id } = useParams();
-  const [event, setEvent] = useState<any>();
+  const [event, setEvent] = useState();
   const [email, setEmail] = useState("");
   const [hours, setHours] = useState("");
   const [comment, setComment] = useState("");
-  const [magicLinks, setMagicLinks] = useState<
-    { email: string; hours: string;}[]
-  >([]);
+  const [magicLinks, setMagicLinks] = useState([]);
   const [x,setX]=useState('');
   const [y,setY]=useState('');
   const [width,setWidth]=useState('');
@@ -52,14 +50,14 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
 
   useEffect(() => {
     const get = async () => {
-      const ev = await getEventid(id as string);
+      const ev = await getEventid(id);
       setEvent(ev);
        
     };
     get();
   }, [id]);
 
-  const isValidEmail = (email: string) =>
+  const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleAddMagicLink = () => {
@@ -75,20 +73,20 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     setComment("");
   };
 
-  const handleRemove = (index: number) => {
+  const handleRemove = (index) => {
     setMagicLinks((prev) => prev.filter((_, i) => i !== index));
   };
   const [excelData, setExcelData] = useState([]); // ← Add state to store Excel rows
 
   if (!event) return <div className="p-10">Loading...</div>;
 
-  const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleExcelUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
   
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+      const data = new Uint8Array(evt.target?.result);
       const workbook = XLSX.read(data, { type: "array" });
   
       const sheetName = workbook.SheetNames[0];
@@ -96,8 +94,8 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
       const rawJson = XLSX.utils.sheet_to_json(sheet);
   
       // Trim and lowercase keys
-      const cleanedJson = rawJson.map((row: any) => {
-        const trimmedRow: any = {};
+      const cleanedJson = rawJson.map((row) => {
+        const trimmedRow= {};
         for (const key in row) {
           const normalizedKey = key.trim().toLowerCase(); // ← lowercased column names
           const value = row[key];
@@ -120,7 +118,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     }
   
     // Add eventId to each entry before sending
-    const enrichedData = excelData.map((item: any) => ({
+    const enrichedData = excelData.map((item) => ({
       ...item,
       eventId: id,
     }));
@@ -167,7 +165,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
             <h4 className="font-semibold mb-1">Admins</h4>
             {event.admins.length > 0 ? (
               <div className="flex flex-wrap gap-2" >
-                {event.admins.map((admin: string, i: number) => (
+                {event.admins.map((admin, i) => (
                   <Badge key={i} variant="secondary" 
                   onClick={()=>
                     handelAdminRemove(admin)}>
@@ -186,7 +184,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
           <div>
             <h4 className="font-semibold mb-1">Categories</h4>
             <div className="flex flex-wrap gap-2">
-              {event.categories.map((cat: string, i: number) => (
+              {event.categories.map((cat, i) => (
                 <Badge key={i} className="bg-blue-100 text-blue-700">
                   {cat}
                 </Badge>
@@ -273,7 +271,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
             <tr key={idx} className="border-t">
               {Object.values(row).map((val, i) => (
                 <td key={i} className="px-4 py-2">
-                  {val as string}
+                  {val}
                 </td>
               ))}
             </tr>
