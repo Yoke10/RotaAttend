@@ -1,10 +1,10 @@
 import axios from 'axios'
 const url='http://localhost:5000';
-export const createEvents=async(name,date,categories)=>{
+export const createEvents=async(name,starteventDate,endeventDate,categories)=>{
     try {
         const res=await axios.post(`${url}/createevent`,{
             name,
-            date,
+            starteventDate,endeventDate,
             categories
         });
     console.log(res);
@@ -31,11 +31,11 @@ export const getEventid=async(id:string)=>{
          console.log(error);
     }
 }
-export const SendQr=async(data,x,y,width,height,templateData)=>{
+export const SendQr=async(data,x,y,width,height,templateData,nameLayout,clubLayout)=>{
     try {
         const res=await axios.post(`${url}/sendqr`,{
             users:data,
-            x,y,width,height,template:templateData
+            x,y,width,height,template:templateData,nameLayout,clubLayout
         });
     console.log(res);
     return res.data
@@ -71,13 +71,14 @@ export const verifyMagiccLink=async(token)=>
         }
     }
 
-export const updateUser=async(email,eventId,Category)=>
+export const updateUser=async(email,eventId,Category,today)=>
         {
             try {
                 const res=await axios.post(`${url}/update/user/event`,{
                     email,
                     eventId,
-                    Category
+                    Category,
+                    today
 
                 });
             console.log(res);
@@ -86,3 +87,14 @@ export const updateUser=async(email,eventId,Category)=>
                  console.log(error);
             }
         }
+export const getEvenUserAnaysis=async(id)=>
+            {
+                try {
+                    const res=await axios.get(`${url}/analysis?eventId=${id}`);
+                console.log(res);
+                return res.data;
+                } catch (error) {
+                     console.log(error);
+                }
+            }
+        

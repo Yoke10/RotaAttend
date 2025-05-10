@@ -15,7 +15,8 @@ import { Label } from "@/components/ui/label";
 import * as XLSX from "xlsx"; 
 
 import TemplateEditor from '../components/TemplateEditor'
-
+import { toast } from "react-toastify";
+import Analysis from '../components/Analysis'
 const EvenPage = () => {
   const { id } = useParams();
   const [event, setEvent] = useState<any>();
@@ -30,12 +31,15 @@ const EvenPage = () => {
   const [width,setWidth]=useState('');
   const [height,setHeight]=useState('');
   const [templateData,setTemplateData]=useState('');
-
-const setQr=(data)=>{
+  const [nameLayout, setNameLayout] = useState();
+  const [clubLayout,setclubLayout]=useState();
+const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     setX(data.x);
     setY(data.y);
     setHeight(data.height);
+    setclubLayout(scaledclubLayout);
     setWidth(data.width);
+    setNameLayout(scaledNameLayout);
     console.log(x);
     console.log(y);
 
@@ -50,6 +54,7 @@ const setQr=(data)=>{
     const get = async () => {
       const ev = await getEventid(id as string);
       setEvent(ev);
+       
     };
     get();
   }, [id]);
@@ -121,7 +126,7 @@ const setQr=(data)=>{
     }));
   
     try {
-      const res=await SendQr(enrichedData,x,y,width,height,templateData);
+      const res=await SendQr(enrichedData,x,y,width,height,templateData,nameLayout,clubLayout);
   
       const data = res;
       if (res.ok) {
@@ -278,6 +283,7 @@ const setQr=(data)=>{
     </div>
   </div>
 )}
+<Analysis eventId={id} event={event}/>
     </div>
   );
 };

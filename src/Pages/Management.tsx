@@ -1,6 +1,6 @@
 import { useParams, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { updateUser, verifyMagiccLink } from '@/lib/user.action';
+import { getEventid, updateUser, verifyMagiccLink } from '@/lib/user.action';
 import { BrowserMultiFormatReader } from '@zxing/library'; // Import the ZXing library
 import { toast ,Bounce} from 'react-toastify';
 
@@ -43,6 +43,18 @@ const Management = () => {
         if (res.status === 200) {
           setVerified(true);
           setUserData(res.data);
+          // Validate dates after setting the event
+             const ev = await getEventid(res.data.eventId as string);
+    const today = new Date();
+    const start = new Date(ev.startDate);
+    const end = new Date(ev.endDate);
+
+    if (today < start || today > end) {
+      toast.error(
+        `Invalid date configuration on event. Current date: ${today.toDateString()}`,
+        { position: "top-center" }
+      );
+    }
         } else {
           setError("Invalid or expired link");
         }
@@ -69,7 +81,9 @@ const Management = () => {
   
       console.log("Scanned Email:", email);
       console.log("Scanned ID:", uid);
-      const res=await updateUser(email,uid,selectedCategory);
+      const today = new Date();
+      // today.setDate(today.getDate() + 2);
+      const res=await updateUser(email,uid,selectedCategory,today);
       console.log(res);         
        if(res.status===200)
        {

@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Card as UICard } from "@/components/ui/card";
 import { createEvents, getEvents } from "@/lib/user.action";
 import { useNavigate } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { toast } from "react-toastify";
 
 // const events = [
 //   { id: "EVT003", name: "Webinar", date: "2024-10-01" },
@@ -30,7 +32,9 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [eventName, setEventName] = useState("");
-  const [eventDate, setEventDate] = useState("");
+  const [starteventDate, setstartEventDate] = useState("");
+  const [endeventDate, setendEventDate] = useState("");
+
   const [categoryInput, setCategoryInput] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [events,setEvents]=useState([]);
@@ -55,11 +59,29 @@ const Dashboard = () => {
   };
 
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // remove time portion
+  
+    const start = new Date(starteventDate);
+    const end = new Date(endeventDate);
+  
+    if (start < today) {
+      toast.error("Start date must be today or later.");
+      return;
+    }
+  
+    if (end < start) {
+      toast.error("End date must be the same as or after the start date.");
+      return;
+    }
+  
     console.log("Event Name:", eventName);
-    console.log("Date:", eventDate);
+    console.log("Start Date:", starteventDate);
+    console.log("End Date:", endeventDate);
     console.log("Categories:", categories);
-    await createEvents(eventName,eventDate,categories);
+  
+    await createEvents(eventName, starteventDate, endeventDate, categories);
     setShowCreateDialog(false);
   };
   const navigate=useNavigate();
@@ -105,10 +127,17 @@ const Dashboard = () => {
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
             />
+            <Label>Start Date</Label>
             <Input
               type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
+              value={starteventDate}
+              onChange={(e) => setstartEventDate(e.target.value)}
+            />
+            <Label>End Date</Label>
+            <Input
+              type="date"
+              value={endeventDate}
+              onChange={(e) => setendEventDate(e.target.value)}
             />
 
             {/* Category Input */}
