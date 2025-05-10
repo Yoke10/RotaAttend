@@ -1,5 +1,5 @@
 import axios from 'axios'
-const url='http://localhost:5000';
+const url='https://rotract-server.onrender.com';
 export const createEvents=async(name,starteventDate,endeventDate,categories)=>{
     try {
         const res=await axios.post(`${url}/createevent`,{
