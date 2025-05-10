@@ -204,7 +204,7 @@ const Management = () => {
           <h2 className="text-xl font-semibold">Scan QR Code to Confirm Category</h2>
           <div className="mt-4 border border-gray-300 p-4 rounded-lg">
             {/* Video element to show the live camera stream */}
-            <video ref={videoRef} style={{ width: '100%',transform: 'scaleX(-1)' }} />
+            <video ref={videoRef} style={{ width: '100%'}} />
           </div>
         </div>
       )}
