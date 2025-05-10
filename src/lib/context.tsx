@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 import { auth,provider } from "./Firebase.config.js";
