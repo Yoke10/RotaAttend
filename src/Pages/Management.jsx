@@ -21,7 +21,9 @@ const Management = () => {
   // Check and request camera access
   const requestCameraAccess = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } }, // 👈 Force rear camera
+      });
       if (videoRef.current) {
         // Set the camera stream to video element
         videoRef.current.srcObject = stream;
