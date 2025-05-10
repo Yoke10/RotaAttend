@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { creatMagiccLink, getEventid, SendQr } from "@/lib/user.action";
 import {
   Card,
@@ -17,6 +17,7 @@ import * as XLSX from "xlsx";
 import TemplateEditor from '../components/TemplateEditor'
 import { toast } from "react-toastify";
 import Analysis from '../components/Analysis'
+import Nav from "../components/Nav";
 const EvenPage = () => {
   const { id } = useParams();
   const [event, setEvent] = useState();
@@ -31,6 +32,31 @@ const EvenPage = () => {
   const [templateData,setTemplateData]=useState('');
   const [nameLayout, setNameLayout] = useState();
   const [clubLayout,setclubLayout]=useState();
+  const [eventM,seteventM]=useState(true);
+  const [templateM,settemplateM]=useState(false);
+  const [analysisM,setanalysisM]=useState(false);
+  const navigate=useNavigate();
+  const Userref=useRef();
+
+
+const onOpenEvent=()=>{
+  seteventM(true);
+  settemplateM(false);
+  setanalysisM(false);
+
+}
+const onOpenTemplate=()=>{
+  seteventM(false);
+  settemplateM(true);
+  setanalysisM(false);
+
+}
+const onOpenAnalaysis=()=>{
+  seteventM(false);
+  settemplateM(false);
+  setanalysisM(true);
+
+}
 const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     setX(data.x);
     setY(data.y);
@@ -113,7 +139,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
   
   const handleBulkUpload = async () => {
     if (excelData.length === 0) {
-      alert("No Excel data to upload");
+      toast.error('Select correct excel sheet to send qr codes')
       return;
     }
   
@@ -122,20 +148,24 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
       ...item,
       eventId: id,
     }));
-  
+    if(!templateData||!nameLayout||!clubLayout)
+    {
+      toast.error("Configure Template to send qr codes")
+      return;
+    }
     try {
       const res=await SendQr(enrichedData,x,y,width,height,templateData,nameLayout,clubLayout);
   
       const data = res;
       if (res.ok) {
-        alert("QR codes sent successfully");
+        toast.success("QR codes sent successfully");
         setExcelData([]); // Clear table if needed
       } else {
-        alert(data.message || "Something went wrong");
+        toast.error(data.message || "Something went wrong");
       }
     } catch (err) {
       console.error("Bulk upload error:", err);
-      alert("Failed to send QR codes");
+      toast.error("Failed to send QR codes");
     }
   };
    const handleCreateMagicLink=async()=>{
@@ -147,11 +177,15 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     console.log(admin);
     
    }
-  return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+  return (<>
+   <div className="flex items-center justify-center cursor-pointer" onClick={()=>navigate('/')}>
+          <img src="/rotao.png" width={400} height={50}/>
+       </div>
+       <Nav onEClick={onOpenEvent} onTClick={onOpenTemplate} onAClick={onOpenAnalaysis}/>
+   { eventM&&<div className="p-6 max-w-4xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{event.name}</CardTitle>
+          <CardTitle className="text-3xl text-center">{event.name}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Attendance */}
@@ -197,8 +231,10 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
             <Label htmlFor="excel" className="font-medium mb-2 block">
               Upload Attendance Sheet
             </Label>
-            <Input id="excel" type="file" accept=".xlsx, .xls" onChange={handleExcelUpload} />
-            <Button className="mt-2" variant="outline">
+            <Input id="excel" type="file" accept=".xlsx, .xls" onChange={handleExcelUpload} ref={Userref} />
+            <Button className="mt-2" variant="outline" onClick={()=>{
+              Userref.current.click();
+            }}>
               <UploadCloud className="w-4 h-4 mr-2" /> Upload
             </Button>
           </div>
@@ -245,13 +281,9 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
           </div>
         </CardContent>
       </Card>
-      {/* templade fixing qr */}
-<TemplateEditor setQr={setQr} setTemplateData={setTemplateData}/>
-
+      
       {/* Preview Table from Excel */}
-<Button  className="mt-4"  onClick={handleBulkUpload} >
-  Send Qr codes
-</Button>
+
 {excelData.length > 0 && (
   <div className="mt-6">
     <h4 className="font-semibold mb-2">Preview Uploaded Users</h4>
@@ -281,8 +313,15 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     </div>
   </div>
 )}
-<Analysis eventId={id} event={event}/>
-    </div>
+    </div>}
+    {/* templade fixing qr */}
+    {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData}/>}
+    {analysisM&&<Analysis eventId={id} event={event}/>
+}
+{excelData.length > 0 &&<Button  className="mt-4"  onClick={handleBulkUpload} >
+  Send Qr codes
+</Button>}
+    </>
   );
 };
 

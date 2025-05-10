@@ -175,7 +175,6 @@ const Management = () => {
 
   if (loading) return <div>Loading and verifying token...</div>;
   if (error) return <div>{error}</div>;
-
   return (
     <div className="max-w-4xl mx-auto p-5">
       <h1 className="text-3xl font-bold mb-6">Event Management</h1>

@@ -17,7 +17,7 @@ import { createEvents, getEvents } from "@/lib/user.action";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
-
+import { CiCirclePlus } from "react-icons/ci";
 // const events = [
 //   { id: "EVT003", name: "Webinar", date: "2024-10-01" },
 //   { id: "EVT002", name: "Hackathon", date: "2024-09-10" },
@@ -28,20 +28,21 @@ import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [eventName, setEventName] = useState("");
-  const [starteventDate, setstartEventDate] = useState("");
-  const [endeventDate, setendEventDate] = useState("");
+  const [eventName, setEventName] = useState(null);
+  const [starteventDate, setstartEventDate] = useState(null);
+  const [endeventDate, setendEventDate] = useState(null);
 
-  const [categoryInput, setCategoryInput] = useState("");
+  const [categoryInput, setCategoryInput] = useState(null);
   const [categories, setCategories] = useState<string[]>([]);
   const [events,setEvents]=useState([]);
+  const [loding,setLoading]=useState(false);
   useEffect(()=>{
          const get= async() => {
               const ev= await getEvents()
               setEvents(ev);
          }
          get();
-  },[])
+  },[loding])
 
 
   const handleAddCategory = () => {
@@ -57,6 +58,7 @@ const Dashboard = () => {
 
 
   const handleSubmit = async () => {
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0); // remove time portion
   
@@ -72,21 +74,54 @@ const Dashboard = () => {
       toast.error("End date must be the same as or after the start date.");
       return;
     }
-  
+  if(!starteventDate)
+  {
+    toast.error("StartDate  want to create event");
+      return;
+  }
+  if(!endeventDate)
+    {
+      toast.error("EndDate  want to create event");
+        return;
+    }
+  if(!eventName)
+    {
+      toast.error("Event name want to create event");
+        return;
+    }
+    if(categories.length<=0)
+      {
+        toast.error("Atleast one category want to create event");
+          return;
+      }
     console.log("Event Name:", eventName);
     console.log("Start Date:", starteventDate);
     console.log("End Date:", endeventDate);
     console.log("Categories:", categories);
-  
-    await createEvents(eventName, starteventDate, endeventDate, categories);
+    setLoading(true);
+    const data=await createEvents(eventName, starteventDate, endeventDate, categories);
+    if(data)
+    {
+      toast.success("Event is Successfully created...")
+    }
     setShowCreateDialog(false);
-  };
+    setLoading(false);
+    };
   const navigate=useNavigate();
+  const formatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   return (
     <div className="p-6 space-y-8 bg-gradient-to-br from-white to-slate-100 min-h-screen">
+       <div className="flex items-center justify-center">
+          <img src="/rotao.png" width={400} height={50}/>
+       </div>
+
+       <div className="cursor-pointer bg-black w-fit rounded-full fixed bottom-6 right-6 z-50 p-2" onClick={() => setShowCreateDialog(true)}>
+
+         <CiCirclePlus className="text-6xl text-orange-700" />
+       </div>
 
       {/* Top Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Create Event"
           value="+"
@@ -95,7 +130,7 @@ const Dashboard = () => {
         />
         <StatCard title="Total Events" value="12" color="bg-yellow-400" />
         <StatCard title="Total Attendance" value="230" color="bg-rose-400" />
-      </div>
+      </div> */}
 
       {/* Event Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -106,7 +141,7 @@ const Dashboard = () => {
             onClick={()=>navigate(`/${event._id}`)}
           >
             <h3 className="text-lg font-bold text-gray-900">{event.name}</h3>
-            <p className="text-sm text-gray-600 mt-2">📅 {event.date}</p>
+            <p className="text-sm text-gray-600 mt-2">📅 { new Date(event.startDate).toLocaleDateString('en-US', formatOptions)}-{ new Date(event.endDate).toLocaleDateString('en-US', formatOptions)}</p>
             <p className="text-sm text-gray-500">🆔 {event._id}</p>
           </UICard>
         ))}
@@ -175,7 +210,13 @@ const Dashboard = () => {
               <Button variant="ghost" onClick={() => setShowCreateDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>Create</Button>
+              <Button onClick={handleSubmit} disabled={loding} >
+                {loding&&<div className="animate-spin">
+                  <img
+                src="/loader.svg" width={20} />
+                  </div>}
+                Create
+                </Button>
             </div>
           </div>  
         </DialogContent>
