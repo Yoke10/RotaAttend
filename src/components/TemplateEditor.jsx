@@ -189,11 +189,26 @@ export default function TemplateEditor({ setQr, setTemplateData,file, setFile,te
                 zIndex: 10,
               }}
             >
-              <div
+              <divconsole.log('TemplateEditor component rendered');
+console.log('File uploaded:', file);
+console.log('Template data:', template);
+console.log('Layout:', layout);
+console.log('Club layout:', clublayout);
+console.log('Name layout:', nameLayout);
+console.log('Club text:', clubText);
+console.log('Club font size:', clubFontSize);
+console.log('Club font family:', clubFontFamily);
+console.log('Club font color:', clubFontColor);
+console.log('Club font weight:', clubFontWeight);
+console.log('Name text:', nameLayout.text);
+console.log('Name font size:', nameLayout.fontSize);
+console.log('Name font family:', nameLayout.fontFamily);
+console.log('Name font weight:', nameLayout.fontWeight);
+console.log('Name color:', nameLayout.color);
                style={{ fontSize: `${nameLayout.fontSize/2}px`, fontFamily: nameLayout.fontFamily, fontWeight: nameLayout.fontWeight, color: nameLayout.color }}
                >
                 {nameLayout.text}
-              </div>
+              </divconsole.log>
             </Rnd>
           </div>
         )}
