@@ -336,7 +336,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
           </div>
           <div>
              <h4 className="font-semibold mb-1">Email Content</h4>
-             <EmailEditor event={event}/>
+             <EmailEditor event={event} toggler={toggler} setToggler={setToggler}/>
           </div>
         </CardContent>
       </Card>

@@ -70,7 +70,7 @@ const Management = () => {
     const start = new Date(ev.startDate);
     const end = new Date(ev.endDate);
 
-    if (today < start || today > end) {
+    if (today <= start || today >= end) {
       toast.error(
         `Invalid date configuration on event. Current date: ${today.toDateString()}`,
         { position: "top-center" }

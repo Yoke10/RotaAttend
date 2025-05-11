@@ -3,7 +3,7 @@ import { Email_Update } from '../lib/user.action';
 import { Button } from './ui/button';
 import { toast } from 'react-toastify';
 
-const EmailEditor = ({event}) => {
+const EmailEditor = ({event,toggler,setToggler}) => {
   const [emailBody, setEmailBody] = useState(event.html);
   const [from, setFrom] = useState(event.from);
   const [subject, setSubject] = useState(event.subject);
@@ -23,6 +23,7 @@ const EmailEditor = ({event}) => {
     {
         toast.success('Email Content for this event is updated...')
     }
+    setToggler(!toggler);
     setLoading(false);
   };
 
