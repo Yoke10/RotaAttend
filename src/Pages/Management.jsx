@@ -36,26 +36,51 @@ const Management = () => {
   // Check and request camera access
   const requestCameraAccess = async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    // Try to get back camera first
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: "environment" } }
+    });
+
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.onloadedmetadata = () => {
         videoRef.current.play();
       };
     }
+
     return stream;
   } catch (err) {
-    if (err.name === "NotAllowedError") {
+    if (err.name === "OverconstrainedError") {
+      // Fall back to front camera (usually for laptops)
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" }
+        });
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = fallbackStream;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current.play();
+          };
+        }
+
+        return fallbackStream;
+      } catch (fallbackErr) {
+        setError("Camera access failed: " + fallbackErr.message);
+        console.error("Fallback camera error:", fallbackErr);
+      }
+    } else if (err.name === "NotAllowedError") {
       setError("Camera access denied. Please allow camera permissions in your browser settings.");
     } else if (err.name === "NotFoundError") {
       setError("No camera device found. Please connect a camera.");
     } else {
       setError("Camera error: " + err.message);
     }
+
     console.error("Camera error:", err);
   }
 };
-
+  
 
   useEffect(() => {
     const verifyToken = async () => {
