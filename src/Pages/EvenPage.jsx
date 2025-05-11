@@ -30,6 +30,7 @@ import { toast } from "react-toastify";
 import Analysis from '../components/Analysis'
 import Nav from "../components/Nav";
 import { handel_Remove_Admin } from "../lib/user.action";
+import EmailEditor from "../components/EmailEditor";
 const EvenPage = () => {
   const { id } = useParams();
   const [event, setEvent] = useState();
@@ -325,13 +326,17 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
 
               </div>
             )}
-              {magicLinks.length > 0&&<Button onClick={handleCreateMagicLink}>
+              {magicLinks.length > 0&&<Button onClick={handleCreateMagicLink} disabled={loading}>
                 {loading&&<div className="animate-spin">
                   <img
                 src="/loader.svg" width={20} />
                   </div>}
                 Create Links</Button>}
 
+          </div>
+          <div>
+             <h4 className="font-semibold mb-1">Email Content</h4>
+             <EmailEditor event={event}/>
           </div>
         </CardContent>
       </Card>
