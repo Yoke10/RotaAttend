@@ -4,8 +4,9 @@ import { Rnd } from "react-rnd";
 import { ChromePicker } from "react-color";
 import { Button } from "./ui/button";
 import { UploadCloud } from "lucide-react";
+import { toast } from "react-toastify";
 
-export default function TemplateEditor({ setQr, setTemplateData,file, setFile,template, setTemplate }) {
+export default function TemplateEditor({ setQr, setTemplateData,file, setFile,template, setTemplate,handleBulkUpload,loading }) {
   const [layout, setLayout] = useState({ x: 50, y: 50, width: 150, height: 150 });
   const [clublayout, setClubLayout] = useState({ x: 50, y: 50, width: 150, height: 150 });
   const [nameLayout, setNameLayout] = useState({
@@ -90,6 +91,7 @@ export default function TemplateEditor({ setQr, setTemplateData,file, setFile,te
     };
 
     reader.readAsDataURL(file);
+    toast.success('Template Layout is Extracted...')
   };
 
   return (
@@ -100,6 +102,20 @@ export default function TemplateEditor({ setQr, setTemplateData,file, setFile,te
         <Button className="mt-2" variant="outline" onClick={() => fileref.current.click()}>
           <UploadCloud className="w-4 h-4 mr-2" /> Upload
         </Button>
+      </div>
+      <div className="flex items-center justify-center gap-10 mb-10">
+              {template && (
+              <Button className="mt-4" onClick={handleExport}>
+                Export QR Layout
+              </Button>
+            )}
+            {template && <Button  className="mt-4"  onClick={handleBulkUpload} disabled={loading} >
+              {loading&&<div className="animate-spin">
+                  <img
+                src="/loader.svg" width={20} />
+                  </div>}
+        Send Qr codes
+      </Button>}
       </div>
 
       <div className="flex flex-col md:flex-row gap-10">
@@ -241,11 +257,7 @@ export default function TemplateEditor({ setQr, setTemplateData,file, setFile,te
         )}
       </div>
 
-      {template && (
-        <Button className="mt-4" onClick={handleExport}>
-          Export QR Layout
-        </Button>
-      )}
+     
     </div>
   );
 }

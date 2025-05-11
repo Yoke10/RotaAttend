@@ -4,6 +4,17 @@ import { useEffect, useState, useRef } from 'react';
 import { getEventid, updateUser, verifyMagiccLink } from '@/lib/user.action';
 import { BrowserMultiFormatReader } from '@zxing/library'; // Import the ZXing library
 import { toast ,Bounce} from 'react-toastify';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const Management = () => {
   const { id } = useParams();
@@ -14,28 +25,37 @@ const Management = () => {
   const [userData, setUserData] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [scanning, setScanning] = useState(false); // controls loader + scan block
+  const [open, setOpen] = useState(false);
+  const [eemail, setemail] = useState(null);
+  const [uuid,setuid]=useState(null)
+
 
   const token = new URLSearchParams(location.search).get("token");
   const videoRef = useRef(null);
 
   // Check and request camera access
   const requestCameraAccess = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        // Set the camera stream to video element
-        videoRef.current.srcObject = stream;
-        // Add an event listener to ensure video is ready
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play(); // Ensure video plays after metadata is loaded
-        };
-      }
-      return stream;
-    } catch (err) {
-      console.error('Camera permission denied:', err);
-      setError("Unable to access the camera. Please enable camera permissions.");
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current.play();
+      };
     }
-  };
+    return stream;
+  } catch (err) {
+    if (err.name === "NotAllowedError") {
+      setError("Camera access denied. Please allow camera permissions in your browser settings.");
+    } else if (err.name === "NotFoundError") {
+      setError("No camera device found. Please connect a camera.");
+    } else {
+      setError("Camera error: " + err.message);
+    }
+    console.error("Camera error:", err);
+  }
+};
+
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -55,6 +75,9 @@ const Management = () => {
         `Invalid date configuration on event. Current date: ${today.toDateString()}`,
         { position: "top-center" }
       );
+        setVerified(false);
+        setError("Unable to access this page date configuration for this page is invalid may be start later or event is ended... ");
+
     }
         } else {
           setError("Invalid or expired link");
@@ -73,19 +96,11 @@ const Management = () => {
       setLoading(false);
     }
   }, [token, id]);
-  const handelScannedData = async (text) => {
-    setScanning(true); // show loader
-  
-    try {
-      // Extract email and ID from the scanned text
-      const [email, uid] = text.split("_");
-  
-      console.log("Scanned Email:", email);
-      console.log("Scanned ID:", uid);
-      const today = new Date();
-      // today.setDate(today.getDate() + 2);
-      const res=await updateUser(email,uid,selectedCategory,today);
-      console.log(res);         
+  const processUserEventRegistration=async()=>{
+        const today = new Date();
+        try {
+          const res=await updateUser(eemail,uuid,selectedCategory,today);
+           console.log(res);         
        if(res.status===200)
        {
         toast.success('✔️ Successfully Processed!', {
@@ -115,17 +130,27 @@ const Management = () => {
                 className: "bg-red-500 text-white", // ensures red background
               });
         }
-      // 🔁 Call your API here (replace with real function)
-    //   const res = await fetch("/api/confirm", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ email, uid, category: selectedCategory }),
-    //   });
+      
+          
+        } catch (error) {
+          toast.error(error.message);
+        }
+  }
+  const handelScannedData = async (text) => {
+    setScanning(true); // show loader
   
-    //   const data = await res.json();
-    //   console.log("API Response:", data);
+    try {
+      // Extract email and ID from the scanned text
+      const [email, uid] = text.split("_");
   
-      // ✅ Optionally show success UI/toast
+      console.log("Scanned Email:", email);
+      console.log("Scanned ID:", uid);
+      const today = new Date();
+      // today.setDate(today.getDate() + 2);
+      setemail(email);
+      setuid(uid);
+      setOpen(true);
+      
     } catch (err) {
       console.error("Processing failed:", err);
       // ❌ Optionally show error
@@ -177,7 +202,10 @@ const Management = () => {
   if (error) return <div>{error}</div>;
   return (
     <div className="max-w-4xl mx-auto p-5">
-      <h1 className="text-3xl font-bold mb-6">Event Management</h1>
+       <div className="flex items-center justify-center cursor-pointer" >
+          <img src="/rotao.png" width={400} height={50} onClick={()=>navigate('/')}/>
+       </div>
+      <h1 className="text-3xl text-center font-bold mb-6">Event Management</h1>
 
       {/* Show Categories Before QR Scanner */}
       {!selectedCategory && verified && (
@@ -223,6 +251,27 @@ const Management = () => {
           <p className="text-lg font-semibold">Selected Category: {selectedCategory}</p>
         </div>
       )}
+
+    
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The user Email is - {eemail} and by clicking continue the user is register for this event catogory {selectedCategory}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpen(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              // perform your action here
+              setOpen(false);
+              processUserEventRegistration();
+            }}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 };

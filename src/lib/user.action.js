@@ -1,8 +1,8 @@
 //@ts-nocheck
 import axios from 'axios'
 
-const url='https://rotract-server.onrender.com';
-// const url='http://localhost:5000';
+// const url='https://rotract-server.onrender.com';
+const url='http://localhost:5000';
 
 export const createEvents=async(name,starteventDate,endeventDate,categories)=>{
     try {
@@ -42,7 +42,7 @@ export const SendQr=async(data,x,y,width,height,templateData,nameLayout,clubLayo
             x,y,width,height,template:templateData,nameLayout,clubLayout
         });
     console.log(res);
-    return res.data
+    return res
     } catch (error) {
          console.log(error);
     }
@@ -56,7 +56,7 @@ export const creatMagiccLink=async(data,eventId)=>
             eventId
         });
     console.log(res);
-    return res.data
+    return res
     } catch (error) {
          console.log(error);
     }
@@ -101,4 +101,15 @@ export const getEvenUserAnaysis=async(id)=>
                      console.log(error);
                 }
             }
-        
+export const handel_Remove_Admin=async(email,id)=>
+            {
+                try {
+                    const res=await axios.post(`${url}/remove/admin`,{
+                        email,id
+                    });
+                console.log(res);
+                return res.data;
+                } catch (error) {
+                     console.log(error);
+                }
+            }

@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { getEvenUserAnaysis } from "../lib/user.action";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { toast } from 'react-toastify';
 const Analysis = ({ eventId, event }) => {
   const [users, setUsers] = useState([]);
   const [dates, setDates] = useState([]);
@@ -86,6 +87,7 @@ const Analysis = ({ eventId, event }) => {
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const fileData = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(fileData, `${event.name || "analysis"}_report.xlsx`);
+    toast.success("Report is Downloading...")
   };
   
   return (

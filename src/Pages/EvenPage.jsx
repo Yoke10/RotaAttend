@@ -13,11 +13,23 @@ import { Button } from "@/components/ui/button";
 import { UploadCloud, UserX2, Users, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import * as XLSX from "xlsx"; 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 import TemplateEditor from '../components/TemplateEditor'
 import { toast } from "react-toastify";
 import Analysis from '../components/Analysis'
 import Nav from "../components/Nav";
+import { handel_Remove_Admin } from "../lib/user.action";
 const EvenPage = () => {
   const { id } = useParams();
   const [event, setEvent] = useState();
@@ -39,7 +51,9 @@ const EvenPage = () => {
   const Userref=useRef();
   const [file, setFile] = useState(null);
   const [template, setTemplate] = useState(null);
-   
+  const [loading,setLoading] = useState(false);
+  const [toggler,setToggler] = useState(false);
+
 
 const onOpenEvent=()=>{
   seteventM(true);
@@ -83,7 +97,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
        
     };
     get();
-  }, [id]);
+  }, [id,toggler]);
 
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -140,7 +154,9 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
   
   
   const handleBulkUpload = async () => {
+    setLoading(true);
     if (excelData.length === 0) {
+       setLoading(false);
       toast.error('Select correct excel sheet to send qr codes')
       return;
     }
@@ -151,37 +167,49 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
       eventId: id,
     }));
     if(!templateData||!nameLayout||!clubLayout)
-    {
-      toast.error("Configure Template to send qr codes")
+    { setLoading(false);
+      toast.error("Configure or Export Template Layout to send qr codes")
       return;
     }
     try {
       const res=await SendQr(enrichedData,x,y,width,height,templateData,nameLayout,clubLayout);
-  
-      const data = res;
-      if (res.ok) {
+      console.log(res.status);
+     if(res.status==202)
+      { 
+        toast.error(res.data.eror);
+      }
+      if (res.status==200) {
         toast.success("QR codes sent successfully");
-        setExcelData([]); // Clear table if needed
-      } else {
-        toast.error(data.message || "Something went wrong");
+      }
+       else {
+        toast.error("Something went wrong");
       }
     } catch (err) {
       console.error("Bulk upload error:", err);
       toast.error("Failed to send QR codes");
     }
+    setLoading(false);
   };
    const handleCreateMagicLink=async()=>{
-           console.log(magicLinks);
+           setLoading(true);
            const res= await creatMagiccLink(magicLinks,id);
-           console.log(res);
+           if(res.status==200)
+           {
+             toast.success("Magic Link For Admins are send Succssesfully..")
+           }
+           setToggler(!toggler);
+           setLoading(false);
+           
    }
    const handelAdminRemove=async(admin)=>{
-    console.log(admin);
+    console.log(admin,event._id);
+    await handel_Remove_Admin(admin,event._id);
+    setToggler(!toggler);
     
    }
   return (<>
-   <div className="flex items-center justify-center cursor-pointer" onClick={()=>navigate('/')}>
-          <img src="/rotao.png" width={400} height={50}/>
+   <div className="flex items-center justify-center cursor-pointer" >
+          <img src="/rotao.png" width={400} height={50} onClick={()=>navigate('/')}/>
        </div>
        <Nav onEClick={onOpenEvent} onTClick={onOpenTemplate} onAClick={onOpenAnalaysis}/>
    { eventM&&<div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -191,10 +219,10 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Attendance */}
-          <div className="flex items-center gap-2 text-gray-700">
+          {/* <div className="flex items-center gap-2 text-gray-700">
             <Users className="w-5 h-5" />
             <span className="text-sm font-medium">Attendance: {event.attendance}</span>
-          </div>
+          </div> */}
 
           {/* Admins */}
           <div>
@@ -203,9 +231,28 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
               <div className="flex flex-wrap gap-2" >
                 {event.admins.map((admin, i) => (
                   <Badge key={i} variant="secondary" 
-                  onClick={()=>
-                    handelAdminRemove(admin)}>
-                    {admin}
+                 >
+                    {admin} 
+                    <AlertDialog>
+                        <AlertDialogTrigger>
+                          <Badge variant="secondary" className={'cursor-pointer'}>
+                                            X
+                                          </Badge></AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete this account
+                              and remove data from this event as well credentials also revoke.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={()=>handelAdminRemove(admin)}>Continue</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    
                   </Badge>
                 ))}
               </div>
@@ -278,7 +325,12 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
 
               </div>
             )}
-              {magicLinks.length > 0&&<Button onClick={handleCreateMagicLink}>Create Links</Button>}
+              {magicLinks.length > 0&&<Button onClick={handleCreateMagicLink}>
+                {loading&&<div className="animate-spin">
+                  <img
+                src="/loader.svg" width={20} />
+                  </div>}
+                Create Links</Button>}
 
           </div>
         </CardContent>
@@ -317,12 +369,11 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
 )}
     </div>}
     {/* templade fixing qr */}
-    {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData} file ={file} setFile={setFile} template={template} setTemplate={setTemplate}/>}
+    
+    {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData} file ={file} setFile={setFile} template={template} setTemplate={setTemplate} handleBulkUpload={handleBulkUpload} loading={loading}/>}
     {analysisM&&<Analysis eventId={id} event={event}/>
 }
-{excelData.length > 0 &&<Button  className="mt-4"  onClick={handleBulkUpload} >
-  Send Qr codes
-</Button>}
+
     </>
   );
 };
