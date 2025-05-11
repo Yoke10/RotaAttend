@@ -79,7 +79,7 @@ export default function TemplateEditor({ setQr, setTemplateData,file, setFile,te
     };
    console.log(scaledLayout);
    console.log(scaledNameLayout);
-   console.log(scaledNameLayout);
+  //  console.log(scaledNameLayout);
    console.log(scaledclubLayout);
 
     const reader = new FileReader();
