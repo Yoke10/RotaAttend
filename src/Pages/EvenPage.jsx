@@ -24,6 +24,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 import TemplateEditor from '../components/TemplateEditor'
 import { toast } from "react-toastify";
@@ -277,16 +285,61 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
           </div>
 
           {/* Upload Excel */}
-          <div className="mt-4">
+          <div className="mt-4 ">
             <Label htmlFor="excel" className="font-medium mb-2 block">
               Upload Attendance Sheet
             </Label>
             <Input id="excel" type="file" accept=".xlsx, .xls" onChange={handleExcelUpload} ref={Userref} />
+            <div className="flex items-center gap-4">
+
             <Button className="mt-2" variant="outline" onClick={()=>{
               Userref.current.click();
             }}>
               <UploadCloud className="w-4 h-4 mr-2" /> Upload
             </Button>
+             <Dialog> 
+                <DialogTrigger>
+                  <Button className='mt-2 cursor-pointer'>Preview url</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    {/* <DialogTitle>Are you absolutely sure?</DialogTitle> */}
+                    <DialogDescription   >
+  {excelData.length > 0 ? (
+    <div className="mt-6 overflow-y-auto h-[700px]">
+      <h4 className="font-semibold mb-2">Preview Uploaded Users</h4>
+      <div className="overflow-auto rounded border">
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-gray-100">
+            <tr>
+              {Object.keys(excelData[0]).map((key) => (
+                <th key={key} className="px-4 py-2 font-semibold capitalize">{key}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {excelData.map((row, idx) => (
+              <tr key={idx} className="border-t">
+                {Object.keys(excelData[0]).map((key) => (
+                  <td key={key} className="px-4 py-2">{row[key]}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ) : (
+    <p>No data available</p>
+  )}
+</DialogDescription>
+
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+
           </div>
 
           {/* Add Magic Link Section */}

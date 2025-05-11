@@ -66,11 +66,15 @@ const Management = () => {
           setUserData(res.data);
           // Validate dates after setting the event
              const ev = await getEventid(res.data.eventId );
-    const today = new Date();
-    const start = new Date(ev.startDate);
-    const end = new Date(ev.endDate);
+   const normalizeDate = (date) => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
 
-    if (today <= start || today >= end) {
+const today = normalizeDate(new Date());
+const start = normalizeDate(new Date(ev.startDate));
+const end = normalizeDate(new Date(ev.endDate));
+
+    if (today < start || today > end) {
       toast.error(
         `Invalid date configuration on event. Current date: ${today.toDateString()}`,
         { position: "top-center" }

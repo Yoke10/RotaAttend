@@ -21,7 +21,7 @@ interface FirebaseContextType {
   // FirebaseProvider component
   export const FirebaseProvider = ({ children }: FirebaseProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
-  
+     
     // Monitor authentication state
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -62,6 +62,7 @@ interface FirebaseContextType {
       try {
         await signOut(auth);
         setUser(null);
+        window.location.reload();
       } catch (error) {
         console.error("Error signing out:", error);
       }
@@ -75,7 +76,7 @@ interface FirebaseContextType {
   };
   
   // Custom hook to use FirebaseContext
-  export const useFirebase = () => {
+export const useFirebase = () => {
     const context = useContext(FirebaseContext);
     if (context === undefined) {
       throw new Error("useFirebase must be used within a FirebaseProvider");

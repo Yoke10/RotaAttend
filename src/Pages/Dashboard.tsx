@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { CiCirclePlus } from "react-icons/ci";
+import { useFirebase } from "@/lib/context";
 // const events = [
 //   { id: "EVT003", name: "Webinar", date: "2024-10-01" },
 //   { id: "EVT002", name: "Hackathon", date: "2024-09-10" },
@@ -36,6 +37,7 @@ const Dashboard = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [events,setEvents]=useState([]);
   const [loding,setLoading]=useState(false);
+  const {signOut}=useFirebase();
   useEffect(()=>{
          const get= async() => {
               const ev= await getEvents()
@@ -43,7 +45,7 @@ const Dashboard = () => {
          }
          get();
   },[loding])
-
+  
 
   const handleAddCategory = () => {
     if (categoryInput && !categories.includes(categoryInput)) {
@@ -114,7 +116,11 @@ const Dashboard = () => {
        <div className="flex items-center justify-center">
           <img src="/rotao.png" width={400} height={50}/>
        </div>
-
+        <div className="flex items-center justify-center">
+          <Button className="bg-red-500" onClick={()=>signOut()}>
+             Logout
+          </Button>
+        </div>
        <div className="cursor-pointer bg-black w-fit rounded-full fixed bottom-6 right-6 z-50 p-2" onClick={() => setShowCreateDialog(true)}>
 
          <CiCirclePlus className="text-6xl text-orange-700" />
