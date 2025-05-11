@@ -37,7 +37,9 @@ const EvenPage = () => {
   const [analysisM,setanalysisM]=useState(false);
   const navigate=useNavigate();
   const Userref=useRef();
-
+  const [file, setFile] = useState(null);
+  const [template, setTemplate] = useState(null);
+   
 
 const onOpenEvent=()=>{
   seteventM(true);
@@ -315,7 +317,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
 )}
     </div>}
     {/* templade fixing qr */}
-    {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData}/>}
+    {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData} file ={file} setFile={setFile} template={template} setTemplate={setTemplate}/>}
     {analysisM&&<Analysis eventId={id} event={event}/>
 }
 {excelData.length > 0 &&<Button  className="mt-4"  onClick={handleBulkUpload} >

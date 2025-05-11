@@ -5,8 +5,7 @@ import { ChromePicker } from "react-color";
 import { Button } from "./ui/button";
 import { UploadCloud } from "lucide-react";
 
-export default function TemplateEditor({ setQr, setTemplateData }) {
-  const [template, setTemplate] = useState(null);
+export default function TemplateEditor({ setQr, setTemplateData,file, setFile,template, setTemplate }) {
   const [layout, setLayout] = useState({ x: 50, y: 50, width: 150, height: 150 });
   const [clublayout, setClubLayout] = useState({ x: 50, y: 50, width: 150, height: 150 });
   const [nameLayout, setNameLayout] = useState({
@@ -28,7 +27,6 @@ export default function TemplateEditor({ setQr, setTemplateData }) {
   const [clubFontWeight, setClubFontWeight] = useState("bold");
 
   const imageRef = useRef();
-  const [file, setFile] = useState(null);
   const fileref = useRef();
 
   const handleFileChange = (e) => {
@@ -136,8 +134,8 @@ export default function TemplateEditor({ setQr, setTemplateData }) {
                 color: clubFontColor,
                 fontWeight: clubFontWeight,
                 fontFamily: clubFontFamily,
-                fontSize: `${clubFontSize}px`,
-                zIndex: 10,
+                fontSize: `${clubFontSize/3}px`,
+                zIndex: 10, 
               }}
             >
               {clubText}
@@ -191,7 +189,9 @@ export default function TemplateEditor({ setQr, setTemplateData }) {
                 zIndex: 10,
               }}
             >
-              <div style={{ fontSize: `${nameLayout.fontSize}px`, fontFamily: nameLayout.fontFamily, fontWeight: nameLayout.fontWeight, color: nameLayout.color }}>
+              <div
+               style={{ fontSize: `${nameLayout.fontSize/2}px`, fontFamily: nameLayout.fontFamily, fontWeight: nameLayout.fontWeight, color: nameLayout.color }}
+               >
                 {nameLayout.text}
               </div>
             </Rnd>
@@ -210,7 +210,7 @@ export default function TemplateEditor({ setQr, setTemplateData }) {
                 <option value="bold">Bold</option>
               </select>
               <ChromePicker color={clubFontColor} onChangeComplete={(color) => setClubFontColor(color.hex)} />
-              <div className="flex gap-4">
+              {/* <div className="flex gap-4">
                 <input type="number" value={clublayout.width} 
                  onChange={(e) =>
                   setClubLayout((prevState) => ({
@@ -218,7 +218,7 @@ export default function TemplateEditor({ setQr, setTemplateData }) {
                     width: parseInt(e.target.value),
                   }))} className="border px-2 py-1 w-full" placeholder="Width" />
                 <input type="number" value={clublayout.height} onChange={(e) => setClubLayout({ ...clublayout, height: parseInt(e.target.value) })} className="border px-2 py-1 w-full" placeholder="Height" />
-              </div>
+              </div> */}
             </div>
 
             <div>
@@ -231,10 +231,10 @@ export default function TemplateEditor({ setQr, setTemplateData }) {
                 <option value="bold">Bold</option>
               </select>
               <ChromePicker color={nameLayout.color} onChangeComplete={(color) => setNameLayout({ ...nameLayout, color: color.hex })} />
-              <div className="flex gap-4">
+              {/* <div className="flex gap-4">
                 <input type="number" value={nameLayout.width} onChange={(e) => setNameLayout({ ...nameLayout, width: parseInt(e.target.value) })} className="border px-2 py-1 w-full" placeholder="Width" />
                 <input type="number" value={nameLayout.height} onChange={(e) => setNameLayout({ ...nameLayout, height: parseInt(e.target.value) })} className="border px-2 py-1 w-full" placeholder="Height" />
-              </div>
+              </div> */}
             </div>
           </div>
         )}
