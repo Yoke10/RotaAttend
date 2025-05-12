@@ -1,8 +1,8 @@
 //@ts-nocheck
 import axios from 'axios'
 
-const url='https://rotract-server.onrender.com';
-// const url='http://localhost:5000';
+//const url='https://rotract-server.onrender.com';
+const url='http://localhost:5000';
 
 export const createEvents=async(name,starteventDate,endeventDate,categories)=>{
     try {
@@ -118,6 +118,18 @@ export const Email_Update=async(from,subject,htmlContent,eventId)=>
                 try {
                     const res=await axios.post(`${url}/event/email`,{
                         from,subject,htmlContent,eventId
+                    });
+                console.log(res);
+                return res
+                } catch (error) {
+                     console.log(error);
+                }
+            }
+export const eventDelete=async(eventId)=>
+            {
+                try {
+                    const res=await axios.post(`${url}/event/delete`,{
+                        eventId
                     });
                 console.log(res);
                 return res

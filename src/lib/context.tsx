@@ -21,11 +21,12 @@ interface FirebaseContextType {
   // FirebaseProvider component
   export const FirebaseProvider = ({ children }: FirebaseProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
-     
+    const [fbl,setfbl] = useState(true);
     // Monitor authentication state
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         setUser(firebaseUser);
+        setfbl(false);
       });
       return () => unsubscribe();
     }, []);
@@ -69,7 +70,7 @@ interface FirebaseContextType {
     };
   
     return (
-      <FirebaseContext.Provider value={{ user, signIn, signOut: logOut,gooleSignIn }} >
+      <FirebaseContext.Provider value={{ user, signIn, signOut: logOut,gooleSignIn,setfbl,fbl }} >
         {children}
       </FirebaseContext.Provider>
     );

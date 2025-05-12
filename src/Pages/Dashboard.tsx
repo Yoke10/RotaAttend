@@ -13,12 +13,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card as UICard } from "@/components/ui/card";
-import { createEvents, getEvents } from "@/lib/user.action";
+import { createEvents, getEvents,eventDelete } from "@/lib/user.action";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import { CiCirclePlus } from "react-icons/ci";
 import { useFirebase } from "@/lib/context";
+import { MdDeleteSweep } from "react-icons/md";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 // const events = [
 //   { id: "EVT003", name: "Webinar", date: "2024-10-01" },
 //   { id: "EVT002", name: "Hackathon", date: "2024-09-10" },
@@ -37,6 +49,8 @@ const Dashboard = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [events,setEvents]=useState([]);
   const [loding,setLoading]=useState(false);
+  const [t,sett]=useState(false);
+
   const {signOut}=useFirebase();
   useEffect(()=>{
          const get= async() => {
@@ -44,7 +58,7 @@ const Dashboard = () => {
               setEvents(ev);
          }
          get();
-  },[loding])
+  },[loding,t])
   
 
   const handleAddCategory = () => {
@@ -111,6 +125,13 @@ const Dashboard = () => {
     };
   const navigate=useNavigate();
   const formatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const handelEventRemove=async(eventId)=>{
+    console.log(eventId);
+    await eventDelete(eventId);
+    toast.success('Event is Deletion Process begins...');
+    sett(!t);
+
+  }
   return (
     <div className="p-6 space-y-8 bg-gradient-to-br from-white to-slate-100 min-h-screen">
        <div className="flex items-center justify-center">
@@ -143,12 +164,35 @@ const Dashboard = () => {
         {events.map((event, index) => (
           <UICard
             key={index}
-            className="rounded-xl p-5 shadow-xl border border-gray-200 transition hover:scale-[1.02] duration-300"
-            onClick={()=>navigate(`/${event._id}`)}
+            className="rounded-xl p-5 shadow-xl border border-gray-200 transition hover:scale-[1.02] duration-300 cursor-pointer"
+            
           >
+            <div className="flex items-center ">
             <h3 className="text-lg font-bold text-gray-900">{event.name}</h3>
+              <AlertDialog>
+                          <AlertDialogTrigger className="ml-auto">
+                            <MdDeleteSweep className="ml-auto text-2xl text-red-600" />
+</AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete this event
+                                            and remove data related to  this event as well as credentials also revoke.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={()=>handelEventRemove(event._id)}>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+            </div>
+            <div onClick={()=>navigate(`/${event._id}`)}>
+
             <p className="text-sm text-gray-600 mt-2">📅 { new Date(event.startDate).toLocaleDateString('en-US', formatOptions)}-{ new Date(event.endDate).toLocaleDateString('en-US', formatOptions)}</p>
             <p className="text-sm text-gray-500">🆔 {event._id}</p>
+            </div>
           </UICard>
         ))}
       </div>

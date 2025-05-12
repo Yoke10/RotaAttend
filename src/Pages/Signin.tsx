@@ -23,7 +23,7 @@ function Signin() {
 
 
   // onauthstate
-   const {user}=useFirebase();
+   const {user,fbl}=useFirebase();
 
   const router = useNavigate();
 
@@ -43,7 +43,10 @@ function Signin() {
    
   }, [userGoogle, userEmail, router, user])
 
-
+if(fbl)
+{
+  return<div>Loading....</div>
+}
 
   return (
      <div className="flex items-center justify-center h-screen w-full bg-gradient-to-r from-purple-400 to-blue-500 px-4">
