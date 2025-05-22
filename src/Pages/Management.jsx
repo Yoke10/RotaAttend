@@ -287,7 +287,8 @@ const end = normalizeDate(new Date(ev.endDate));
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              The user Email is - {eemail} and by clicking continue the user is register for this event catogory {selectedCategory}
+             // The user Email is - {eemail} and by clicking continue the user is register for this event catogory {selectedCategory}
+              Are You Sure ?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
