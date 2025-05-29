@@ -424,8 +424,8 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
       </table>
     </div>
   </div>
-)}
-    </div>} */}
+)}*/}
+    </div>} 
     {/* templade fixing qr */}
     
     {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData} file ={file} setFile={setFile} template={template} setTemplate={setTemplate} handleBulkUpload={handleBulkUpload} loading={loading}/>}
