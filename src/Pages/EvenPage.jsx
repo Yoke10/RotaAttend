@@ -396,7 +396,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
       
       {/* Preview Table from Excel */}
 
-{excelData.length > 0 && (
+     {/*{excelData.length > 0 && (
   <div className="mt-6">
     <h4 className="font-semibold mb-2">Preview Uploaded Users</h4>
     <div className="overflow-auto rounded border">
@@ -425,7 +425,7 @@ const setQr=(data,scaledNameLayout,scaledclubLayout)=>{
     </div>
   </div>
 )}
-    </div>}
+    </div>} */}
     {/* templade fixing qr */}
     
     {templateM&&<TemplateEditor setQr={setQr} setTemplateData={setTemplateData} file ={file} setFile={setFile} template={template} setTemplate={setTemplate} handleBulkUpload={handleBulkUpload} loading={loading}/>}
